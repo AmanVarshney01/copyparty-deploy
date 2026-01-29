@@ -11,8 +11,8 @@ services:
     environment:
       PYTHONUNBUFFERED: "1"
       CPP_ADMIN_PASSWORD: ${CPP_ADMIN_PASSWORD:-changeme}
+    entrypoint: /bin/sh
     command:
-      - sh
       - -c
       - |
         cat > /tmp/copyparty.conf <<EOF
@@ -38,7 +38,7 @@ services:
             r: admin
             rwmda: admin
         EOF
-        exec copyparty -c /tmp/copyparty.conf
+        exec python3 -m copyparty -c /tmp/copyparty.conf
     stop_grace_period: 15s
     healthcheck:
       test: ["CMD-SHELL", "wget --spider -q 127.0.0.1:3923/?reset=/._"]
