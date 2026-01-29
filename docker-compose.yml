@@ -1,0 +1,25 @@
+services:
+  copyparty:
+    image: copyparty/ac:latest
+    container_name: copyparty
+    user: "1000:1000"
+    restart: unless-stopped
+    ports:
+      - "3923:3923"
+    volumes:
+      - ./config:/cfg
+      - copyparty-data:/w
+    environment:
+      PYTHONUNBUFFERED: "1"
+      # Uncomment to enable mimalloc for better performance (uses 2x RAM):
+      # LD_PRELOAD: /usr/lib/libmimalloc-secure.so.2
+    stop_grace_period: 15s
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q 127.0.0.1:3923/?reset=/._"]
+      interval: 1m
+      timeout: 2s
+      retries: 5
+      start_period: 15s
+
+volumes:
+  copyparty-data:
