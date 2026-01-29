@@ -37,7 +37,14 @@ services:
           accs:
             r: admin
             rwmda: admin
+
+        [/uploads]
+          /w/uploads
+          accs:
+            g: *
+            rwmda: admin
         EOF
+        mkdir -p /w/uploads
         exec python3 -m copyparty -c /tmp/copyparty.conf
     stop_grace_period: 15s
     healthcheck:
