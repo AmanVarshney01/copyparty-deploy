@@ -29,6 +29,9 @@ services:
           acao: https://copyparty.amanv.cloud
           acam: GET,HEAD,POST,PUT,DELETE,OPTIONS
 
+          # Enable shares feature at /s/
+          shr: /s
+
         [accounts]
           admin: $${CPP_ADMIN_PASSWORD}
 
@@ -37,14 +40,7 @@ services:
           accs:
             r: admin
             rwmda: admin
-
-        [/uploads]
-          /w/uploads
-          accs:
-            g: *
-            rwmda: admin
         EOF
-        mkdir -p /w/uploads
         exec python3 -m copyparty -c /tmp/copyparty.conf
     stop_grace_period: 15s
     healthcheck:
