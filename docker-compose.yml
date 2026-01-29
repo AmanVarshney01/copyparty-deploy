@@ -7,12 +7,38 @@ services:
     ports:
       - "3923:3923"
     volumes:
-      - ./config:/cfg
       - copyparty-data:/w
     environment:
       PYTHONUNBUFFERED: "1"
-      # Uncomment to enable mimalloc for better performance (uses 2x RAM):
-      # LD_PRELOAD: /usr/lib/libmimalloc-secure.so.2
+      CPP_ADMIN_PASSWORD: ${CPP_ADMIN_PASSWORD:-changeme}
+    command:
+      - sh
+      - -c
+      - |
+        cat > /tmp/copyparty.conf <<EOF
+        [global]
+          e2dsa
+          e2ts
+          ansi
+
+          # Reverse proxy settings (trust Dokploy/Traefik)
+          rproxy: -1
+          xff-src: lan
+
+          # CORS: trust your HTTPS domain
+          acao: https://copyparty.amanv.cloud
+          acam: GET,HEAD,POST,PUT,DELETE,OPTIONS
+
+        [accounts]
+          admin: $${CPP_ADMIN_PASSWORD}
+
+        [/]
+          /w
+          accs:
+            r: admin
+            rwmda: admin
+        EOF
+        exec copyparty -c /tmp/copyparty.conf
     stop_grace_period: 15s
     healthcheck:
       test: ["CMD-SHELL", "wget --spider -q 127.0.0.1:3923/?reset=/._"]
